@@ -1,27 +1,25 @@
 #include<bits/stdc++.h>
 using namespace std;
-#define org 4//Ìõ¼şÊôĞÔ
-#define objn 6//¶ÔÏó¸öÊı
-#define ub 0.75//ÉÏ½ç
-#define lb 0.4//ÏÂ½ç
-#define lvofd 3//Á£¶È²ãÊı
-#define dNum 1//¾ö²ß±êÇ©
+#define org 4//æ¡ä»¶å±æ€§
+#define objn 6//å¯¹è±¡ä¸ªæ•°
+#define ub 0.75//ä¸Šç•Œ
+#define lb 0.4//ä¸‹ç•Œ
+#define lvofd 3//ç²’åº¦å±‚æ•°
+#define dNum 1//å†³ç­–æ ‡ç­¾
 struct dobj{
     float data[org];
     int sum=0;
     int flag=0;
-    int state=0;//×éºÅ
-    int statelv0=0;//µÚÒ»¼¶Á£¶ÈµÄ±àºÅ
+    int state=0;//ç»„å·
+    int statelv0=0;//ç¬¬ä¸€çº§ç²’åº¦çš„ç¼–å·
     int statelv1=0;
     int statelv2=0;
-    int region;//»®·Öµ½µÄÓò -1£º¸ºÓò 0£º±ß½çÓò 1£ºÕıÓò
+    int region;//åˆ’åˆ†åˆ°çš„åŸŸ -1ï¼šè´ŸåŸŸ 0ï¼šè¾¹ç•ŒåŸŸ 1ï¼šæ­£åŸŸ
     float valp;
 };
-struct divdec{//¾ö²ß±êÇ©¼æÁ£¶È»®·Ö
-    char objNum[objn];//¶ÔÏóºÅ
+struct divdec{//å†³ç­–æ ‡ç­¾å…¼ç²’åº¦åˆ’åˆ†
+    char objNum[objn];//å¯¹è±¡å·
     int numofobj=0;
-    int numofbq;
-
 };
 struct setregion{
     int objNum[objn];
@@ -34,26 +32,46 @@ struct divdec lv1[objn];
 struct divdec lv2[objn];
 struct divdec lv3[objn];
 int ii,jj,n;
-struct setregion bndR[objn];//±ß½çÓò
-struct setregion negR[objn];//¸ºÓò
-struct setregion posR[objn];//ÕıÓò
-char result[objn] ;//×ö¼¯ºÏÔËËãµÄ½á¹û´æ·Å
+int numofbq0=0;
+int numofbq1=0;
+int numofbq2=0;
+int numofbq3=0;
+
+struct setregion bndR[objn];//è¾¹ç•ŒåŸŸ
+struct setregion negR[objn];//è´ŸåŸŸ
+struct setregion posR[objn];//æ­£åŸŸ
+char result[objn] ;//åšé›†åˆè¿ç®—çš„ç»“æœå­˜æ”¾
 char *last;
-void tc()//²âÊÔ´ú¼Û
+float Ddata[objn][org] = { 0 };//å®šä¹‰ä¸€ä¸ª1500*2çš„çŸ©é˜µï¼Œç”¨äºå­˜æ”¾æ•°æ®
+void tc()//æµ‹è¯•ä»£ä»·
 {
 //=========
 }
-void dc()//ÑÓ³Ù´ú¼Û
+void dc()//å»¶è¿Ÿä»£ä»·
 {
 //
 }
-void inp()//½ÓÊÜÊı¾İ
+void readin()
+{
+
+    ifstream infile;//å®šä¹‰è¯»å–æ–‡ä»¶æµï¼Œç›¸å¯¹äºç¨‹åºæ¥è¯´æ˜¯in
+    infile.open("2.txt");//æ‰“å¼€æ–‡ä»¶
+    for (int i = 0; i <objn; i++)//å®šä¹‰è¡Œå¾ªç¯
+    {
+        for (int j = 0; j<org; j++)
+        {
+            infile >> Ddata[i][j];//è¯»å–ä¸€ä¸ªå€¼ï¼ˆç©ºæ ¼ã€åˆ¶è¡¨ç¬¦ã€æ¢è¡Œéš”å¼€ï¼‰å°±å†™å…¥åˆ°çŸ©é˜µä¸­ï¼Œè¡Œåˆ—
+        }
+    }
+    infile.close();//è¯»å–å®Œæˆä¹‹åå…³é—­æ–‡ä»¶
+}
+void inp()//æ¥å—æ•°æ®
 {
     for (ii=0;ii<objn;ii++)
         for(jj=0;jj<org;jj++)
-            scanf("%f",&obj[ii].data[jj]);
+            obj[ii].data[jj]=Ddata[ii][jj];
 }
-void outp()//Êä³öÊı¾İ
+void outp()//è¾“å‡ºæ•°æ®
 {
     printf("\t");
     for(n=0;n<org;n++)
@@ -70,11 +88,11 @@ void outp()//Êä³öÊı¾İ
             printf("%d\n",obj[ii].sum);
         }
 }
-void dvd()//»®·Ö¾ö²ß±êÇ©
+void dvd()//åˆ’åˆ†å†³ç­–æ ‡ç­¾
 {
-    int i,j;//i¶ÔÏóºÅ
-    //int p=0;//ÀàÖĞ¶ÔÏóµÄ¸öÊı
-    int c=0;//¾ö²ß±êÇ©¸öÊı
+    int i,j;//iå¯¹è±¡å·
+    //int p=0;//ç±»ä¸­å¯¹è±¡çš„ä¸ªæ•°
+    int c=0;//å†³ç­–æ ‡ç­¾ä¸ªæ•°
     for(i=0;i<objn;i++)
     {
         int xx=i;
@@ -116,7 +134,7 @@ void dvd()//»®·Ö¾ö²ß±êÇ©
 
 
     //printf("%d",c);
-    int h1,h2,h3;//ÍùÏÂÊÇÊä³öÊôĞÔ±êÇ©»®·Ö¶ÔÏóµÄµÈ¼ÛÀà   ÒÑÍê³É
+    int h1,h2,h3;//å¾€ä¸‹æ˜¯è¾“å‡ºå±æ€§æ ‡ç­¾åˆ’åˆ†å¯¹è±¡çš„ç­‰ä»·ç±»   å·²å®Œæˆ
     for(h3=0;h3<c+1;h3++)
         printf("D%d\t\t\t",h3);
     printf("\n");
@@ -132,7 +150,7 @@ void dvd()//»®·Ö¾ö²ß±êÇ©
 printf("\n");
 
 }
-float conp(char *d,char *lv)//¼ÆËãÌõ¼ş¸ÅÂÊ
+float conp(char *d,char *lv)//è®¡ç®—æ¡ä»¶æ¦‚ç‡
 {
     int lend=strlen(d);
     int lenlv=strlen(lv);
@@ -145,17 +163,17 @@ float conp(char *d,char *lv)//¼ÆËãÌõ¼ş¸ÅÂÊ
     float p3=lenr;
     return (p3/p2);
 }
-void gran1()//µÚÒ»¼¶Á£¶È
+void gran1()//ç¬¬ä¸€çº§ç²’åº¦
 {
-int i,j;//i¶ÔÏóºÅ
-    //int p=0;//ÀàÖĞ¶ÔÏóµÄ¸öÊı
-    int c=0;//¾ö²ß±êÇ©¸öÊı
+int i,j;//iå¯¹è±¡å·
+    //int p=0;//ç±»ä¸­å¯¹è±¡çš„ä¸ªæ•°
+    int c=0;//å†³ç­–æ ‡ç­¾ä¸ªæ•°
     for(i=0;i<objn;i++)
     {
         int xx=i;
         if(i==0)
             {
-                lv0[c].objNum[lv0[c].numofobj]=i+48;//asciiÂë±íÀïµÄ
+                lv0[c].objNum[lv0[c].numofobj]=i+48;//asciiç è¡¨é‡Œçš„
                 obj[i].statelv0=c;
                 lv0[c].numofobj++;
                 }
@@ -186,17 +204,17 @@ int i,j;//i¶ÔÏóºÅ
                }
         }
     }
-
+    numofbq0=c;
     int cotlv0;
-    int posC=0;//ÕıÓò¼ÆÊı
+    int posC=0;//æ­£åŸŸè®¡æ•°
     int negC=0;
     int bndC=0;
     for( cotlv0=0;cotlv0<objn;cotlv0++)
     {
-        if(conp(Ddec[dNum].objNum,lv0[obj[cotlv0].statelv0].objNum)>ub)//¸ù¾İ¾ö²ß±êÇ©À´»®·Öobj[cotlv0].statelv0
+        if(conp(Ddec[dNum].objNum,lv0[obj[cotlv0].statelv0].objNum)>ub)//æ ¹æ®å†³ç­–æ ‡ç­¾æ¥åˆ’åˆ†obj[cotlv0].statelv0
         {
             obj[cotlv0].region=1;
-            obj[cotlv0].flag++;//Âß¼­½»
+            obj[cotlv0].flag++;//é€»è¾‘äº¤
             posR[0].objNum[posC]=cotlv0;
             posC++;
             posR[0].numofobj++;
@@ -204,7 +222,7 @@ int i,j;//i¶ÔÏóºÅ
         else if(conp(Ddec[dNum].objNum,lv0[obj[cotlv0].statelv0].objNum)<lb)
         {
             obj[cotlv0].region=-1;
-            obj[cotlv0].flag--;//Âß¼­½»
+            obj[cotlv0].flag--;//é€»è¾‘äº¤
             negR[0].objNum[negC]=cotlv0;
             negC++;
             negR[0].numofobj++;
@@ -225,24 +243,125 @@ int i,j;//i¶ÔÏóºÅ
     printf("\n");
     for(h1=0;h1<c+1;h1++)
     {
+        h2=lv0[h1].numofobj;
             for(int v=0;v<lv0[h1].numofobj;v++)
                     printf("X%c ",lv0[h1].objNum[v]);
-                lv0[h1].numofobj--;
+                h2--;
+        printf("\t\t\t");
+    }
+   // printf("\n%d\n",numofbq0);
+    printf("\n");
+}
+
+
+
+void gran2()
+{
+    int i,j,k,l;
+    int c=0;
+    for(j=0;j<numofbq0;j++)//numofbqæ•°é‡åŠ ä¸€ä¸ºçœŸå®å€¼ numofobjæ˜¯çœŸå®å€¼
+        for(i=0;i<lv0[j].numofobj;i++)//numofbijæ˜¯lv0[numofbq0].objNum[i] æ˜¯charç±»å‹ï¼ï¼ï¼
+        {
+            //printf("%d",lv0[j].numofobj);
+            int xx=i;
+            if(i==0)
+            {
+                lv1[numofbq1].objNum[lv1[numofbq1].numofobj]=lv0[j].objNum[i];//asciiç è¡¨é‡Œçš„
+                int ZZZ=lv0[j].objNum[i];
+                obj[ZZZ-48].statelv1=numofbq1;
+                lv1[numofbq1].numofobj++;
+                }
+            else
+            {
+
+                for(l=0;l<i;l++)
+                {
+                    int ZZZ=lv0[j].objNum[i];
+                    int ZZZZ=lv0[j].objNum[l];
+                    if(obj[ZZZ-48].data[1]==obj[ZZZZ-48].data[1])
+                    {
+                        obj[ZZZ-48].statelv1=obj[ZZZZ-48].statelv1;
+                        lv1[obj[ZZZZ-48].statelv1].objNum[lv1[obj[ZZZZ-48].statelv1].numofobj]=lv0[numofbq0].objNum[i];
+                        lv1[obj[ZZZZ-48].statelv1].numofobj++;
+                        break;
+                    }
+                    else
+                        {
+                            xx--;
+                        }
+
+                    if(xx==0)
+                        {
+                            numofbq1++;
+                            lv1[numofbq1].objNum[lv1[numofbq1].numofobj]=lv0[numofbq0].objNum[i];
+                            int ZZZ=lv0[j].objNum[i];
+                            obj[ZZZ-48].statelv1=numofbq1;
+                            lv1[numofbq1].numofobj++;
+                        }
+                    }
+                }
+        }
+    int cotlv1;
+    int posC=0;//æ­£åŸŸè®¡æ•°
+    int negC=0;
+    int bndC=0;
+    for( cotlv1=0;cotlv1<objn;cotlv1++)
+    {
+        if(conp(Ddec[dNum].objNum,lv1[obj[cotlv1].statelv1].objNum)>ub)//Ddec[obj[cotlv1].statelv1].objNum
+        {
+            obj[cotlv1].region=1;
+            obj[cotlv1].flag++;//é€»è¾‘äº¤
+            posR[1].objNum[posC]=cotlv1;
+            posC++;
+            posR[1].numofobj++;
+        }
+        else if(conp(Ddec[dNum].objNum,lv1[obj[cotlv1].statelv1].objNum)<lb)//
+        {
+            obj[cotlv1].region=-1;
+            obj[cotlv1].flag--;//é€»è¾‘äº¤
+            negR[1].objNum[negC]=cotlv1;
+            negC++;
+            negR[1].numofobj++;
+        }
+        else
+        {
+            obj[cotlv1].region=0;
+            bndR[1].objNum[bndC]=cotlv1;
+            bndC++;
+            bndR[1].numofobj++;
+        }
+    }
+
+    int h1,h2,h3;
+    for(h3=0;h3<numofbq1+1;h3++)
+        printf("Lv1%d\t\t\t",h3);
+    printf("\n");
+    for(h1=0;h1<numofbq1+1;h1++)
+    {
+        h2=lv1[h1].numofobj;
+            for(int v=0;v<lv1[h1].numofobj;v++)
+                    printf("X%c ",lv1[h1].objNum[v]);
+                h2--;
         printf("\t\t\t");
     }
     printf("\n");
 }
-void gran2()//µÚ¶ş¼¶Á£¶È
+
+
+
+
+
+/*void gran2()//ç¬¬äºŒçº§ç²’åº¦
 {
-    int i,j;//i¶ÔÏóºÅ
-    //int p=0;//ÀàÖĞ¶ÔÏóµÄ¸öÊı
-    int c=0;//¾ö²ß±êÇ©¸öÊı
+    int i,j;//iå¯¹è±¡å·
+    //int p=0;//ç±»ä¸­å¯¹è±¡çš„ä¸ªæ•°
+    int c=0;//å†³ç­–æ ‡ç­¾ä¸ªæ•°
     for(i=0;i<objn;i++)
     {
         int xx=i;
         if(i==0)
             {
-                lv1[c].objNum[lv1[c].numofobj]=i+48;//asciiÂë±íÀïµÄ
+                lv1[c].objNum[lv1[c].numofobj]=i+48;//asciiç è¡¨é‡Œçš„
                 obj[i].statelv1=c;
                 lv1[c].numofobj++;
                 }
@@ -275,7 +394,7 @@ void gran2()//µÚ¶ş¼¶Á£¶È
     }
 
     int cotlv1;
-    int posC=0;//ÕıÓò¼ÆÊı
+    int posC=0;//æ­£åŸŸè®¡æ•°
     int negC=0;
     int bndC=0;
     for( cotlv1=0;cotlv1<objn;cotlv1++)
@@ -283,7 +402,7 @@ void gran2()//µÚ¶ş¼¶Á£¶È
         if(conp(Ddec[dNum].objNum,lv1[obj[cotlv1].statelv1].objNum)>ub)//Ddec[obj[cotlv1].statelv1].objNum
         {
             obj[cotlv1].region=1;
-            obj[cotlv1].flag++;//Âß¼­½»
+            obj[cotlv1].flag++;//é€»è¾‘äº¤
             posR[1].objNum[posC]=cotlv1;
             posC++;
             posR[1].numofobj++;
@@ -291,7 +410,7 @@ void gran2()//µÚ¶ş¼¶Á£¶È
         else if(conp(Ddec[dNum].objNum,lv1[obj[cotlv1].statelv1].objNum)<lb)//
         {
             obj[cotlv1].region=-1;
-            obj[cotlv1].flag--;//Âß¼­½»
+            obj[cotlv1].flag--;//é€»è¾‘äº¤
             negR[1].objNum[negC]=cotlv1;
             negC++;
             negR[1].numofobj++;
@@ -318,18 +437,18 @@ void gran2()//µÚ¶ş¼¶Á£¶È
         printf("\t\t\t");
     }
     printf("\n");
-}
-void gran3()//Èı
+}*/
+void gran3()//ä¸‰
 {
-    int i,j;//i¶ÔÏóºÅ
-    //int p=0;//ÀàÖĞ¶ÔÏóµÄ¸öÊı
-    int c=0;//¾ö²ß±êÇ©¸öÊı
+    int i,j;//iå¯¹è±¡å·
+    //int p=0;//ç±»ä¸­å¯¹è±¡çš„ä¸ªæ•°
+    int c=0;//å†³ç­–æ ‡ç­¾ä¸ªæ•°
     for(i=0;i<objn;i++)
     {
         int xx=i;
         if(i==0)
             {
-                lv2[c].objNum[lv2[c].numofobj]=i+48;//asciiÂë±íÀïµÄ
+                lv2[c].objNum[lv2[c].numofobj]=i+48;//asciiç è¡¨é‡Œçš„
                 obj[i].statelv2=c;
                 lv2[c].numofobj++;
                 }
@@ -338,7 +457,7 @@ void gran3()//Èı
 
             for(j=0;j<i;j++)
                {
-                if(obj[i].data[0]==obj[j].data[0])
+                if(obj[i].data[2]==obj[j].data[2])
                 {
                     obj[i].statelv2=obj[j].statelv2;
                     lv2[obj[j].statelv2].objNum[lv2[obj[j].statelv2].numofobj]=i+48;
@@ -362,7 +481,7 @@ void gran3()//Èı
     }
 
     int cotlv2;
-    int posC=0;//ÕıÓò¼ÆÊı
+    int posC=0;//æ­£åŸŸè®¡æ•°
     int negC=0;
     int bndC=0;
     for( cotlv2=0;cotlv2<objn;cotlv2++)
@@ -370,7 +489,7 @@ void gran3()//Èı
         if(conp(Ddec[dNum].objNum,lv2[obj[cotlv2].statelv2].objNum)>ub)//Ddec[obj[cotlv2].statelv2].objNum
         {
             obj[cotlv2].region=1;
-            obj[cotlv2].flag++;//Âß¼­½»
+            obj[cotlv2].flag++;//é€»è¾‘äº¤
             posR[2].objNum[posC]=cotlv2;
             posC++;
             posR[2].numofobj++;
@@ -378,7 +497,7 @@ void gran3()//Èı
         else if(conp(Ddec[dNum].objNum,lv2[obj[cotlv2].statelv2].objNum)<lb)//
         {
             obj[cotlv2].region=-1;
-            obj[cotlv2].flag--;//Âß¼­½»
+            obj[cotlv2].flag--;//é€»è¾‘äº¤
             negR[2].objNum[negC]=cotlv2;
             negC++;
             negR[2].numofobj++;
@@ -407,7 +526,7 @@ void gran3()//Èı
     printf("\n");
 }
 
-void csos()//ÈıÖ§¾ö²ßºóµÄ½á¹û
+void csos()//ä¸‰æ”¯å†³ç­–åçš„ç»“æœ
 {
     int levofdvd;
     int i,j,k;
@@ -452,6 +571,7 @@ void mixresult()// ccccccccccccccccccccccccccccccc
 }
 int main()
 {
+    readin();
     inp();
     outp();
     dvd();
@@ -460,18 +580,6 @@ int main()
     gran3();
     csos();
     mixresult();
-    printf("%d",posR[0].objNum[0]);
-    printf("%d",posR[0].objNum[1]);
-    printf("%d",posR[0].objNum[2]);
-    printf("%d",posR[1].objNum[0]);
-    printf("%d",posR[1].objNum[1]);
-    printf("%d",posR[1].objNum[2]);
-    printf("%d",bndR[0].objNum[0]);
-    printf("%d",bndR[0].objNum[1]);
-    printf("%d",bndR[0].objNum[2]);
-    printf("%d",bndR[1].objNum[0]);
-    printf("%d",bndR[1].objNum[1]);
-    printf("%d",bndR[1].objNum[2]);
 
    // printf("%f\n",conp(Ddec[0].objNum,lv0[0].objNum));
    // printf("%f\n",conp(Ddec[0].objNum,lv1[0].objNum));
